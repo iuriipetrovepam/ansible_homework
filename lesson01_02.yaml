@@ -1,0 +1,15 @@
+- hosts: all
+  tasks:  
+  - name: Uninstall Apache Webserver
+    yum: 
+      pkg: httpd 
+      state: absent
+  - name: remove html file
+    ansible.builtin.file:
+      path: /var/www/html/index.html
+      state: absent
+  - name: close port 80
+    ansible.posix.firewalld:
+      service: http
+      permanent: yes
+      state: disabled

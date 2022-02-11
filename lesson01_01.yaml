@@ -1,0 +1,20 @@
+- hosts: all
+  tasks:  
+  - name: Installed Apache Webserver
+    yum: 
+      pkg: httpd 
+      state: latest
+  - name: Add a line to a file if the file does not exist, without passing regexp
+    ansible.builtin.lineinfile:
+      path: /var/www/html/index.html
+      line: Welcome to my web server
+      create: yes
+  - name: service is restarted
+    service:
+      name: httpd
+      state: restarted
+  - name: Opened http port
+    ansible.posix.firewalld: 
+      service: http
+      permanent: yes 
+      state: enabled
