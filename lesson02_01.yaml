@@ -1,0 +1,26 @@
+- hosts: all
+  vars:
+    users:
+      - Alice
+      - Bob
+      - Carol
+  vars_files:
+    - my_vault.yml
+
+  tasks:  
+  - name: Add the users
+    ansible.builtin.user:
+      name: "{{ item }}"
+      comment: "{{ item }}@example.com"
+      update_password: on_create
+      create_home: yes
+      state: present
+      password: "{{ secret_password | password_hash('sha512') }}"
+        
+    with_items:
+      - "{{ users }}"
+
+  - name: Print password
+    ansible.builtin.debug:
+      msg: "mysql Pwd: {{ secret_password }}"
+
