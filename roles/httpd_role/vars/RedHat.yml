@@ -1,0 +1,4 @@
+---
+src: ./templates/index.html.j2
+dst: /var/www/html/index.html
+rpm_name: httpd

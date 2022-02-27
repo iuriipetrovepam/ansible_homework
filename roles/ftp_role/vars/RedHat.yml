@@ -1,0 +1,8 @@
+---
+src: ./templates/vsftpd.conf.j2
+dst: /etc/vsftpd/vsftpd.conf
+rpm_name: vsftpd
+var_anonymous_enable: "YES"
+var_anon_upload_enable: "YES"
+var_anon_root: /var/ftp/pub
+var_no_anon_password: "YES"

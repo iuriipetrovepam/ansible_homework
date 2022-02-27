@@ -1,0 +1,28 @@
+---
+# vars setup
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# setup tasks
+- name: Setup httpd tasks
+  include_tasks: "setup-{{ ansible_os_family }}.yml"
+  when: ansible_os_family == "RedHat"
+
+# main
+- name: Apache Webserver installed
+  yum:
+    pkg: "{{ rpm_name }}"
+    state: latest    
+- name: File index.html copied
+  template:
+    src: "{{ src }}" 
+    dest: "{{ dst }}"
+- name: http port opened
+  ansible.posix.firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+- name: Service is restarted
+  service:
+    name: "{{ rpm_name }}"
+    state: restarted

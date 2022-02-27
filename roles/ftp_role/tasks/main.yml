@@ -1,0 +1,49 @@
+---
+# vars setup
+- name: Include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# setup tasks
+- name: Setup httpd tasks
+  include_tasks: "setup-{{ ansible_os_family }}.yml"
+  when: ansible_os_family == "RedHat"
+
+# main
+- name: Install SElinux python library
+  yum:
+    pkg: policycoreutils-python-utils
+    state: latest
+- name: Set SElinux boolean
+  ansible.posix.seboolean:
+    name: ftpd_anon_write
+    state: yes
+    persistent: yes
+- name: ftp rpm installed
+  yum:
+    pkg: "{{ rpm_name }}"
+    state: latest   
+- name: Create a pub directory if it does not exist
+  ansible.builtin.file:
+    path: /var/ftp/pub
+    state: directory
+    mode: '0755'
+- name: Create a upload directory if it does not exist
+  ansible.builtin.file:
+    path: /var/ftp/pub/upload
+    state: directory
+    mode: '0757' 
+- name: Config file copied
+  template:
+    src: "{{ src }}"
+    dest: "{{ dst }}"
+    backup: yes
+- name: ftp port opened
+  ansible.posix.firewalld:
+    service: ftp
+    permanent: yes
+    state: enabled
+- name: Start service ftp, if not started
+  ansible.builtin.service:
+    name: "{{ rpm_name }}"
+    state: restarted
+
